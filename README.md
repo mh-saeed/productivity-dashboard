@@ -4,7 +4,7 @@ Welcome to the Productivity Dashboard, a versatile web application designed to s
 
 ## Getting Started
 
-1. **Access**: Open your web browser and navigate to the dashboard's URL (e.g., https://your-dashboard-url.com).
+1. **Access**: Open your web browser and navigate to the dashboard's URL (e.g., [https://productivity-dashboard.com](https://mh-saeed-productivity-dashboard.netlify.app/)).
 2. **Interface**: Familiarize yourself with the dashboard's components, each tailored to enhance productivity.
 
 ## Dashboard Components
