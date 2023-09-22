@@ -1,8 +1,7 @@
 class Dashboard {
   constructor() {
-    this.pinButton = document.getElementById("pin-button");
-    this.isPinned = false;
-    this.pinButton.addEventListener("click", this.togglePin.bind(this));
+    this.shareButton = document.getElementById("share-button");
+    this.shareButton.addEventListener("click", this.copyCurrentURL.bind(this));
 
     this.notepadTextArea = document.getElementById("notepad-text");
 
@@ -36,23 +35,27 @@ class Dashboard {
     }
   }
 
-  togglePin() {
+  copyCurrentURL() {
     try {
-      this.isPinned = !this.isPinned;
-      switch (this.isPinned) {
-        case true:
-          this.pinButton.textContent = "Unpin";
-          document.title = "Pinned - Dashboard";
-          break;
-        case false:
-          this.pinButton.textContent = "Pin";
-          document.title = "Productivity Dashboard";
-          break;
-        default:
-          break;
-      }
+      // Get the current URL
+      const currentURL = window.location.href;
+
+      // Create a temporary input element to copy the URL
+      const tempInput = document.createElement("input");
+      tempInput.setAttribute("value", currentURL);
+      document.body.appendChild(tempInput);
+
+      // Select and copy the URL
+      tempInput.select();
+      document.execCommand("copy");
+
+      // Remove the temporary input element
+      document.body.removeChild(tempInput);
+
+      // Display a success message (you can customize this part)
+      alert("URL copied to clipboard!");
     } catch (error) {
-      console.error("Error toggling pin:", error);
+      console.error("Error copying URL:", error);
     }
   }
 
