@@ -168,7 +168,7 @@ body {
 
 .task-list {
   overflow-y: auto;
-  max-height: 500px;
+  max-height: 400px;
 }
 
 .task-list ul {
