@@ -1,58 +1,62 @@
 class Dashboard {
   constructor() {
     this.shareButton = document.getElementById("share-button");
-    this.shareButton.addEventListener("click", this.copyCurrentURL.bind(this));
-
     this.notepadTextArea = document.getElementById("notepad-text");
+    this.taskListElement = document.getElementById("task-list-ul");
+    this.taskInputElement = document.getElementById("task-input");
+    this.taskPriorityElement = document.getElementById("task-priority");
+    this.startButton = document.getElementById("start-stop");
+    this.resetButton = document.getElementById("reset");
+    this.stopwatch = document.getElementById("stopwatch"); // Add this line
+    this.startTime = 0; // Add this line
+    this.interval = null; // Add this line
+    this.isRunning = false; // Add this line
 
+    this.setupEventListeners();
+    this.loadDashboardData();
+    this.initialize();
+    this.updateTaskList();
+  }
+
+  loadDashboardData() {
     try {
-      const savedData = localStorage.getItem("dashboardData");
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        this.taskList = parsedData.taskList || [];
-        this.notepadText = parsedData.notepadText || "";
-      } else {
-        this.taskList = [];
-        this.notepadText = "";
-      }
-
-      this.taskListElement = document.getElementById("task-list-ul");
-      this.taskInputElement = document.getElementById("task-input");
-      this.taskPriorityElement = document.getElementById("task-priority");
-      this.addTaskButton = document.getElementById("add-task");
-      this.startButton = document.getElementById("start-stop");
-      this.resetButton = document.getElementById("reset");
-      this.stopwatch = document.getElementById("stopwatch");
-      this.startTime = 0;
-      this.interval = null;
-      this.isRunning = false;
-
-      this.initialize();
-      this.setupEventListeners();
-      this.updateTaskList();
+      const savedData = localStorage.getItem("dashboardData") || "{}";
+      const parsedData = JSON.parse(savedData);
+      this.taskList = parsedData.taskList || [];
+      this.notepadText = parsedData.notepadText || "";
     } catch (error) {
-      console.error("Error initializing Dashboard:", error);
+      console.error("Error loading data from localStorage:", error);
+    }
+  }
+
+  handleButtonClick(buttonId) {
+    switch (buttonId) {
+      case "share-button":
+        this.copyCurrentURL();
+        break;
+      case "add-task":
+        this.addTask();
+        break;
+      case "start-stop":
+        this.toggleStopwatch();
+        break;
+      case "reset":
+        this.resetStopwatch();
+        break;
+      default:
+        break;
     }
   }
 
   copyCurrentURL() {
     try {
-      // Get the current URL
       const currentURL = window.location.href;
-
-      // Create a temporary input element to copy the URL
       const tempInput = document.createElement("input");
-      tempInput.setAttribute("value", currentURL);
+      tempInput.value = currentURL;
       document.body.appendChild(tempInput);
-
-      // Select and copy the URL
       tempInput.select();
       document.execCommand("copy");
-
-      // Remove the temporary input element
       document.body.removeChild(tempInput);
-
-      // Display a success message (you can customize this part)
       alert("URL copied to clipboard!");
     } catch (error) {
       console.error("Error copying URL:", error);
@@ -81,14 +85,13 @@ class Dashboard {
       this.taskListElement.innerHTML = "";
       for (const [index, task] of this.taskList.entries()) {
         const li = document.createElement("li");
-        li.classList.add("task-item", `priority-${task.priority}`);
+        li.className = `task-item priority-${task.priority}`;
         li.innerHTML = `
-              <span class="task-text">${task.text}</span>
-              <button class="remove-task" data-index="${index}">Remove</button>
-          `;
+          <span class="task-text">${task.text}</span>
+          <button class="remove-task" data-index="${index}">Remove</button>
+        `;
         this.taskListElement.appendChild(li);
       }
-
       this.setupRemoveTaskButtons();
     } catch (error) {
       console.error("Error updating task list:", error);
@@ -196,15 +199,22 @@ class Dashboard {
 
   setupEventListeners() {
     try {
-      this.addTaskButton.addEventListener("click", this.addTask.bind(this));
-      this.startButton.addEventListener(
-        "click",
-        this.toggleStopwatch.bind(this)
-      );
-      this.resetButton.addEventListener(
-        "click",
-        this.resetStopwatch.bind(this)
-      );
+      const buttons = [
+        "share-button",
+        "add-task",
+        "start-stop",
+        "reset",
+        "notepad-text",
+      ];
+
+      buttons.forEach((button) => {
+        const element = document.getElementById(button);
+        if (element) {
+          element.addEventListener("click", () =>
+            this.handleButtonClick(button)
+          );
+        }
+      });
 
       // Add an event listener to the notepad text area to save data as you type
       this.notepadTextArea.addEventListener("input", this.saveData.bind(this));
